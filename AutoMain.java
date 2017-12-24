@@ -16,6 +16,8 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FO
 DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
+
+//Import stuff
 package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Color;
@@ -222,23 +224,23 @@ public class AutoMain extends LinearOpMode {
                 //Finds if it is blue or red:
                 if ((colors.red > colors.blue) && (colors.red > 0.5)) {
                     if (posInField == 1) {
-                        cw();
+                        ccw();
                     } else if (posInField == 2) {
-                        ccw();
-                    } else if (posInField == 3) {
                         cw();
-                    } else if (posInField == 4) {
+                    } else if (posInField == 3) {
                         ccw();
+                    } else if (posInField == 4) {
+                        cw();
                     }
                 } else if ((colors.red < colors.blue) && (colors.blue > 0.5)) {
                     if (posInField == 1) {
-                        ccw();
+                        cw();
                     } else if (posInField == 2) {
-                        cw();
-                    } else if (posInField == 3) {
                         ccw();
-                    } else if (posInField == 4) {
+                    } else if (posInField == 3) {
                         cw();
+                    } else if (posInField == 4) {
+                        ccw();
                     }
                 } else {
                     //continue to try again
@@ -263,6 +265,7 @@ public class AutoMain extends LinearOpMode {
             }
 
             if (posInField == 1) {
+                encoderDrive(TURN_SPEED, TURN_AROUND, -TURN_AROUND, 5.0);
                 if (vuMark == RelicRecoveryVuMark.LEFT) {
                     //Left Code
                     encoderDrive(TURN_SPEED, 3.8, -3.8, 2.0);
@@ -284,7 +287,6 @@ public class AutoMain extends LinearOpMode {
                 glyphGrabber(true);
                 encoderDrive(DRIVE_SPEED, 10, 10, 4.0);
             } else if (posInField == 2) {
-                encoderDrive(TURN_SPEED, -TURN_90_DEG, TURN_90_DEG, 5.0);
                 if (vuMark == RelicRecoveryVuMark.LEFT) {
                     //Left Code
                     encoderDrive(TURN_SPEED, -4.5, 4.5, 2.0);
@@ -306,6 +308,7 @@ public class AutoMain extends LinearOpMode {
                 glyphGrabber(true);
                 encoderDrive(DRIVE_SPEED, 10, 10, 4.0);
             } else if (posInField == 3) {
+                encoderDrive(TURN_SPEED, TURN_AROUND, -TURN_AROUND, 5.0);
                 if (vuMark == RelicRecoveryVuMark.LEFT) {
                     //Left Code
                     encoderDrive(DRIVE_SPEED, 30, 30, 4.0);
@@ -323,7 +326,6 @@ public class AutoMain extends LinearOpMode {
                 glyphGrabber(false);
                 encoderDrive(DRIVE_SPEED, 10, 10, 1.9);
             } else if (posInField == 4) {
-                encoderDrive(TURN_SPEED, TURN_AROUND, -TURN_AROUND, 2.0);
                 if (vuMark == RelicRecoveryVuMark.LEFT) {
                     //Left Code
                     encoderDrive(DRIVE_SPEED, 46, 46, 4.0);
