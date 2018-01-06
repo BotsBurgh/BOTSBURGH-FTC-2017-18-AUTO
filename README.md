@@ -152,9 +152,10 @@ Finds where each induvidual motor has to go.
 ---
 
 The glyph grabber:
-Open:
-rPosition = 0.60;
-lPosition = 1.00;
-Closed:
-rPosition = 0.50;
-lPosition = 0.92;
+
+- Open:
+  - rPosition = 0.60;
+  - lPosition = 1.00;
+- Closed:
+  - rPosition = 0.50;
+  - lPosition = 0.92;
