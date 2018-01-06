@@ -72,8 +72,6 @@ public class AutoMain extends LinearOpMode {
     //Color sensor for glyphs
     ColorSensor glyphSensor;
     private Gyroscope imu;
-    private DcMotor back_right;
-    private DcMotor back_left;
     private Servo armServo;
     private NormalizedColorSensor armColorSensor;
     //Inits servo vars
@@ -91,12 +89,12 @@ public class AutoMain extends LinearOpMode {
     static final double     TURN_SPEED              =  0.1;
     static final double     TURN_AROUND             =  36.72;
     static final double     TURN_90_DEG             =  18.36;
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
+    private DcMotor back_left = null;
+    private DcMotor back_right = null;
+    private DcMotor front_left = null;
+    private DcMotor front_right = null;
     private Servo glyph_right = null;
     private Servo glyph_left = null;
-    private double lp = 0.8;
-    private double rp = 0;
     private double rPosition = 0.32;
     private double lPosition = 0.82;
     
@@ -121,12 +119,18 @@ public class AutoMain extends LinearOpMode {
         imu = hardwareMap.get(Gyroscope.class, "imu");
         
         //Configure drive motors
-        rightDrive = hardwareMap.get(DcMotor.class, "rightDrive");
-        rightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        leftDrive = hardwareMap.get(DcMotor.class, "leftDrive");
-        leftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        back_right = hardwareMap.get(DcMotor.class, "back_right");
+        back_right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        back_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        back_left = hardwareMap.get(DcMotor.class, "back_left");
+        back_left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        back_left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        front_right = hardwareMap.get(DcMotor.class, "front_right");
+        front_right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        front_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        front_left = hardwareMap.get(DcMotor.class, "front_left");
+        front_left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        front_left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //Configure glyph servos
         glyph_left = hardwareMap.get(Servo.class, "glyphLeft");
@@ -148,11 +152,17 @@ public class AutoMain extends LinearOpMode {
         telemetry.addData("Status", "Resetting Encoders");
         telemetry.update();
 
-        leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);    //Resets the encoders of the left drive.
-        rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);   //Resets the encoders of the right drive
+        //Reset encoder
+        back_left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); 
+        back_right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        front_left.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER); 
+        front_right.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //Set mode of driving (encoder or other stuff)
+        back_left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        back_right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        front_left.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        front_right.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -221,7 +231,7 @@ public class AutoMain extends LinearOpMode {
                 colors.red   /= max;
                 colors.green /= max;
                 colors.blue  /= max;
-                //Finds if it is blue or red:
+                //Finds if it is blue or red, loops through until it finds an answer
                 if ((colors.red > colors.blue) && (colors.red > 0.5)) {
                     if (posInField == 1) {
                         ccw();
@@ -243,7 +253,7 @@ public class AutoMain extends LinearOpMode {
                         ccw();
                     }
                 } else {
-                    //continue to try again
+                    //continue and try again
                 }
                 color = colors.toColor();
                 //Show color on display:
@@ -260,11 +270,11 @@ public class AutoMain extends LinearOpMode {
             armServo.setPosition(0.2);
             sleep(500);
             //Turn off light to save battery
-            if (armColorSensor instanceof SwitchableLight) {
-                ((SwitchableLight)armColorSensor).enableLight(false);
+            if (armColorSensor instanceof SwitchableLight) { //is there a light on the sensor?
+                ((SwitchableLight)armColorSensor).enableLight(false); //if so, turn off the light
             }
 
-            if (posInField == 1) {
+            if (posInField == 1) { //refer to the posInFiels variable on line 68
                 encoderDrive(TURN_SPEED, TURN_AROUND, -TURN_AROUND, 5.0);
                 if (vuMark == RelicRecoveryVuMark.LEFT) {
                     //Left Code
@@ -282,9 +292,9 @@ public class AutoMain extends LinearOpMode {
                     encoderDrive(DRIVE_SPEED, 54, 54, 7.0);
                     encoderDrive(TURN_SPEED, -4.5, 4.5, 2.0);
                 }
-                glyphGrabber(false);
-                encoderDrive(DRIVE_SPEED, -8, -8, 3.0);
                 glyphGrabber(true);
+                encoderDrive(DRIVE_SPEED, -8, -8, 3.0);
+                glyphGrabber(false);
                 encoderDrive(DRIVE_SPEED, 10, 10, 4.0);
             } else if (posInField == 2) {
                 if (vuMark == RelicRecoveryVuMark.LEFT) {
@@ -303,9 +313,9 @@ public class AutoMain extends LinearOpMode {
                     encoderDrive(DRIVE_SPEED, 50, 50, 7.0);
                     encoderDrive(TURN_SPEED, 3.8, -3.8, 2.0);
                 }
-                glyphGrabber(false);
-                encoderDrive(DRIVE_SPEED, -8, -8, 3.0);
                 glyphGrabber(true);
+                encoderDrive(DRIVE_SPEED, -8, -8, 3.0);
+                glyphGrabber(false);
                 encoderDrive(DRIVE_SPEED, 10, 10, 4.0);
             } else if (posInField == 3) {
                 encoderDrive(TURN_SPEED, TURN_AROUND, -TURN_AROUND, 5.0);
@@ -380,37 +390,52 @@ public class AutoMain extends LinearOpMode {
             encoderDrive(TURN_SPEED, -TURN_90_DEG/3, TURN_90_DEG/3, 2.0);
         }
 
-       
+        
         public void encoderDrive(double speed, double leftInches, double rightInches, double timeoutS) {
-            int newLeftTarget;
-            int newRightTarget;
+            int newLeftTargetBack;
+            int newRightTargetBack;
+            int newLeftTargetFront;
+            int newRightTargetFront;
             double startingRuntime = runtime.seconds();
     
             // Ensure that the opmode is still active
             if (opModeIsActive()) {
     
                 // Determine new target position, and pass to motor controller
-                newLeftTarget = leftDrive.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
-                newRightTarget = rightDrive.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
-                leftDrive.setTargetPosition(newLeftTarget);
-                rightDrive.setTargetPosition(newRightTarget);
+                newLeftTargetBack = back_left.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+                newRightTargetBack = back_right.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+                newLeftTargetFront = front_left.getCurrentPosition() + (int)(leftInches * COUNTS_PER_INCH);
+                newRightTargetFront = front_right.getCurrentPosition() + (int)(rightInches * COUNTS_PER_INCH);
+
+                back_left.setTargetPosition(newLeftTargetBack);
+                back_right.setTargetPosition(newRightTargetBack);
+                front_left.setTargetPosition(newLeftTargetFront);
+                front_right.setTargetPosition(newRightTargetFront);
     
                 // Turn On RUN_TO_POSITION
-                leftDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                rightDrive.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                back_left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                back_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                front_left.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                front_right.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     
-                //Start motion.
-                leftDrive.setPower(Math.abs(speed));
-                rightDrive.setPower(Math.abs(speed));
+                //Start motion
+                back_left.setPower(Math.abs(speed));
+                back_right.setPower(Math.abs(speed));
+                front_left.setPower(Math.abs(speed));
+                front_right.setPower(Math.abs(speed));
     
                 if (timeoutS == 0.0) {
                     while (opModeIsActive()
                     && (leftDrive.isBusy() && rightDrive.isBusy())) {
                         // Display it for the driver.
-                        telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
-                        telemetry.addData("Path2",  "Running at %7d :%7d",
-                                                    leftDrive.getCurrentPosition(),
-                                                    rightDrive.getCurrentPosition());
+                        telemetry.addData("Back",  "Running to %7d :%7d", newLeftTargetBack,  newRightTargetBack);
+                        telemetry.addData("Front", "Running to %7d :%7d", newLeftTargetFront, newRightTargetFront);
+                        telemetry.addData("Back",  "Running at %7d :%7d",
+                                                    back_left.getCurrentPosition(),
+                                                    back_right.getCurrentPosition());
+                        telemetry.addData("Front",  "Running at %7d :%7d",
+                                                    front_left.getCurrentPosition(),
+                                                    front_right.getCurrentPosition());
                         telemetry.update();
                     }
                 } else {
@@ -418,10 +443,14 @@ public class AutoMain extends LinearOpMode {
                     && (leftDrive.isBusy() && rightDrive.isBusy())
                     && (timeoutS < runtime.seconds()-startingRuntime)) {
                     // Display it for the driver.
-                    telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
-                    telemetry.addData("Path2",  "Running at %7d :%7d",
-                                                leftDrive.getCurrentPosition(),
-                                                rightDrive.getCurrentPosition());
+                    telemetry.addData("Back to",  "Running to %7d :%7d", newLeftTargetBack,  newRightTargetBack);
+                    telemetry.addData("Front to", "Running to %7d :%7d", newLeftTargetFront, newRightTargetFront);
+                    telemetry.addData("Back now",  "Running at %7d :%7d",
+                                                back_left.getCurrentPosition(),
+                                                back_right.getCurrentPosition());
+                    telemetry.addData("Front now",  "Running at %7d :%7d",
+                                                front_left.getCurrentPosition(),
+                                                front_right.getCurrentPosition());
                     telemetry.update();
                     }
                 }
