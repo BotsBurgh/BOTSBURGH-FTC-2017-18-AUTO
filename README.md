@@ -4,6 +4,8 @@ Our auto period file starting part.
 
 Made by: Sambhav Saggi for FTC Team 11792
 
+Copyright (c) FTC team 11792, all rights reserved unless otherwise explictly stated
+
 ---
 
 ## Code Description
